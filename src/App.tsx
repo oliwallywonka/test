@@ -4,46 +4,71 @@ import { MovieComponent } from './components/movie'
 
 
 function App() {
-  const URL = `https://www.omdbapi.com/?apikey=ce07379d&s=`
+  const URL = `https://www.omdbapi.com/?apikey=ce07379d`
 
-  const [searchQuery, setSearchQuery] = useState<string>('')
+  const [searchQuery, setSearchQuery] = useState<string>("")
   const [movies, setMovies] = useState<Movie[]>([])
-  const [isLoading, setILoading] = useState<boolean>(false)
+  const [movie, setMovie] = useState<Movie>()
+  const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<boolean>(false)
 
-  const searchMovies = async (e:string) => {
-    setILoading(true)
-    const response = await fetch(`${URL}${searchQuery}`)
-    const data = await response.json() as MoviesResponse
-    console.log(data)
-    setMovies(data.Search)
-    if (data.Error) setError(true)
-    setILoading(false)
+  const debounce = (fn: Function, ms = 300) => {
+    let timeoutId: ReturnType<typeof setTimeout>;
+    return function (this: any, ...args: any[]) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => fn.apply(this, args), ms);
+    };
+  };
+
+  const searchMovies = async () => {
+    await debounce(async () => {
+      
+      setIsLoading(true)
+      const response = await fetch(`${URL}&s=${searchQuery}`)
+      const data = await response.json() as MoviesResponse
+      console.log(data)
+      setMovies(data.Search)
+      if (data.Error) setError(true)
+      setIsLoading(false)
+    }, 500)
   }
-  
-  useEffect(()=> {
-    //searchMovies()
-  },
-  [])
+
+  const getDetails =  async(imdbId: string) => {
+    const response = await fetch(`${URL}&i=${imdbId}`)
+      const data = await response.json() as Movie
+      console.log(data)
+      setMovie(data)
+      setIsLoading(false)
+  }
+
+  useEffect(() => {
+    searchMovies();  
+  }, [searchQuery])
+
   return (
     <>
       {isLoading&&'...loading'}
       {error&&'...no encontrado'}
         <input 
           type="text"
-          onChange={(e)=> {e.preventDefault(); searchMovies(e.target.value)}}
+          onChange={(e)=> {setSearchQuery(e.target.value);}}
           
         />
       <div>{searchQuery}</div>
       {
         movies?.map(movie => (
-          <MovieComponent 
-            Title={movie.Title} 
-            Year={movie.Year} 
-            key={movie.imdbID}
-            Poster={movie.Poster}
-            imdbID={movie.imdbID}
-          />
+          <div
+            onClick={() => getDetails}
+          >
+
+            <MovieComponent 
+              Title={movie.Title} 
+              Year={movie.Year} 
+              key={movie.imdbID}
+              Poster={movie.Poster}
+              imdbID={movie.imdbID}
+            />
+          </div>
         ))
       }
     </>
