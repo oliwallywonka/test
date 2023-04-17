@@ -22,6 +22,7 @@ function App() {
 
   const searchMovies = async () => {
     setIsLoading(true)
+    setError(false)
     const response = await fetch(`${URL}&s=${searchQuery}`)
     const data = await response.json() as MoviesResponse
     console.log(data)
@@ -52,12 +53,12 @@ function App() {
         movies?.map(movie => (
           <div
             onClick={() => getDetails}
+            key={movie.imdbID}
           >
 
             <MovieComponent 
               Title={movie.Title} 
               Year={movie.Year} 
-              key={movie.imdbID}
               Poster={movie.Poster}
               imdbID={movie.imdbID}
             />
