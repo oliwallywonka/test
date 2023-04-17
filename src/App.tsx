@@ -21,16 +21,13 @@ function App() {
   };
 
   const searchMovies = async () => {
-    await debounce(async () => {
-      
-      setIsLoading(true)
-      const response = await fetch(`${URL}&s=${searchQuery}`)
-      const data = await response.json() as MoviesResponse
-      console.log(data)
-      setMovies(data.Search)
-      if (data.Error) setError(true)
-      setIsLoading(false)
-    }, 500)
+    setIsLoading(true)
+    const response = await fetch(`${URL}&s=${searchQuery}`)
+    const data = await response.json() as MoviesResponse
+    console.log(data)
+    setMovies(data.Search)
+    if (data.Error) setError(true)
+    setIsLoading(false)
   }
 
   const getDetails =  async(imdbId: string) => {
@@ -41,17 +38,13 @@ function App() {
       setIsLoading(false)
   }
 
-  useEffect(() => {
-    searchMovies();  
-  }, [searchQuery])
-
   return (
     <>
       {isLoading&&'...loading'}
       {error&&'...no encontrado'}
         <input 
           type="text"
-          onChange={(e)=> {setSearchQuery(e.target.value);}}
+          onChange={(e)=> {setSearchQuery(e.target.value); searchMovies()}}
           
         />
       <div>{searchQuery}</div>
