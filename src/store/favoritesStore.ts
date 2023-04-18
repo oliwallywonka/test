@@ -11,9 +11,16 @@ interface FavoriteState {
 export const useFavoriteStore = create(persist<FavoriteState>(
     (set) => ({
         favorites: [],
-        addFavorite: (movie: IMovieDetail) => set((state) => ({
-            favorites: [...state.favorites, movie],
-        })),
+        addFavorite: (movie: IMovieDetail) => set((state) => {
+            for(const searchMovie of state.favorites) {
+                if (searchMovie.imdbID === movie.imdbID) {
+                    return {};
+                }
+            }
+            return {
+                favorites: [...state.favorites, movie],
+            }
+        }),
         removeFavorite: (id: string) => set((state) => {
             const favoritesFiltered = state.favorites.filter((movie) => {
                 return movie.imdbID !== id
