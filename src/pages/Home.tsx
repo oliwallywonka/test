@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useMovies } from "../api/useMovies"
+import { LinkWrapper } from "../components/linkWrapper";
+import { MovieCard } from "../components/movieCard";
 
 export const Home = () => {
     const [query, useQuery] = useState<string>('marvel');
@@ -11,10 +13,13 @@ export const Home = () => {
             {isLoading&&<div>{'... CARGANDO'}</div>}
             {data?.Error&&<div>{data.Error}</div>}
             {data?.Search.map(movie => (
-                <div key={movie.imdbID}>
-                    {movie.Title}
-                    <img src={movie.Poster} alt={movie.Title} />
-                </div>
+                <LinkWrapper to={`/${movie.imdbID}`} key={movie.imdbID}>
+                    <MovieCard 
+                        Title={movie.Title}
+                        Year={movie.Year}
+                        Poster={movie.Poster}
+                    />
+                </LinkWrapper>
             ))}
         </div>
     )
