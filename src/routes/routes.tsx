@@ -1,4 +1,4 @@
-import { RouteObject } from "react-router-dom";
+import { Outlet, RouteObject } from "react-router-dom";
 import { Home } from "../pages/Home";
 import { MovieDetails } from "../pages/MovieDetails";
 import { Favorites } from "../pages/Favorites";
@@ -6,6 +6,7 @@ import { Favorites } from "../pages/Favorites";
 const routes: RouteObject[] = [
     {
         path: '/',
+        element: <><Outlet/></>,
         errorElement: <span>404</span>,
         children: [
             {
